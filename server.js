@@ -12,8 +12,8 @@ const uuid = uuidv4();
 
 app.get('/testimonials/random', (req, res) => {
     try {
-        if(db.length > 0) {
-            const randomData = db[Math.floor(Math.random() * db.length)];
+        if(db.testimonials.length > 0) {
+            const randomData = db.testimonials[Math.floor(Math.random() * db.testimonials.length)];
             res.json(randomData);
         } else {
             res.status(404).json({ message: 'Database is not avalable.'});
@@ -26,7 +26,7 @@ app.get('/testimonials/random', (req, res) => {
 
 app.get('/testimonials', (req, res) => {
     try {
-        if(db.length > 0) res.json(db);
+        if(db.testimonials.length > 0) res.json(db.testimonials);
         else res.status(404).json({ message: 'Database is not avalable.'});
     } catch(error) {
         res.status(500).json({ message: 'Internal Server Error'});
@@ -35,7 +35,7 @@ app.get('/testimonials', (req, res) => {
 
 app.get('/testimonials/:id', (req, res) => {
     try {
-        const selectedData = db.find(data => data.id == req.params.id);
+        const selectedData = db.testimonials.find(data => data.id == req.params.id);
             if(selectedData){
                 res.json(selectedData);
             } else {
@@ -51,7 +51,7 @@ app.post('/testimonials', (req, res) => {
         const { author, text } = req.body;
 
         if( author && text ) {
-            db.push({ id: uuid, author, text });
+            db.testimonials.push({ id: uuid, author, text });
             res.json({ message: 'OK' });
         } else {
             res.status(400).json({ message: 'All params are required.' });
@@ -64,7 +64,7 @@ app.post('/testimonials', (req, res) => {
 app.put('/testimonials/:id', (req, res) => {
     try {
         const { author, text } = req.body;
-        const dataToEdit = db.find(data => data.id == req.params.id);
+        const dataToEdit = db.testimonials.find(data => data.id == req.params.id);
         if(dataToEdit){
             if(author, text) {
                 dataToEdit.author = author;
@@ -83,10 +83,10 @@ app.put('/testimonials/:id', (req, res) => {
 
 app.delete('/testimonials/:id', (req, res) => {
     try {
-        const dataToRemove = db.find(data => data.id == req.params.id);
+        const dataToRemove = db.testimonials.find(data => data.id == req.params.id);
         if(dataToRemove) {
-            const dataToRemoveIndex = db.indexOf(dataToRemove);
-            db.splice(dataToRemoveIndex, 1);
+            const dataToRemoveIndex = db.testimonials.indexOf(dataToRemove);
+            db.testimonials.splice(dataToRemoveIndex, 1);
             res.json({ message: 'OK '});
         } else {
             res.status(404).json({ message: 'This id does not exist.' });
