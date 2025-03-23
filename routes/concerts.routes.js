@@ -27,11 +27,13 @@ router.route('/concerts').post((req, res) => {
     try{
         const { performer, genre, price, day, image } = req.body;
         if( performer && genre && price && day && image ) {
-            db.concerts.push({ id: uuid, performer, genre, price, day, image });
-            res.json({ message: 'OK' });
-        } else {
-            res.status(400).json({ message: 'All params are required.' });
-        }
+            const parsedPrice = parseInt(price);
+            const parsedDay = parseInt(day);
+            if(!isNaN(parsedDay) && !isNaN(parsedPrice)){
+                db.concerts.push({ id: uuid, performer, genre, price: parsedPrice, day: parsedDay, image });
+                res.json({ message: 'OK' });
+            } else res.status(409).json({ message: 'Invalid price or day value.'});
+        } else res.status(400).json({ message: 'All params are required.' });
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error' });
     }
@@ -43,11 +45,13 @@ router.route('/concerts/:id').put((req, res) => {
         const { performer, genre, price, day, image } = req.body;
         if(dataToEdit){
             if(performer && genre && price && day && image) {
-                Object.assign(dataToEdit, {performer, genre, price, day, image});
-                res.json({ message: 'OK' });
-            } else {
-                res.status(400).json({ message: 'All params are required.' });
-            }
+                const parsedPrice = parseInt(price);
+                const parsedDay = parseInt(day);
+                if(!isNaN(parsedDay) && !isNaN(parsedPrice)){
+                    Object.assign(dataToEdit, {performer, genre, price, day, image});
+                    res.json({ message: 'OK' });
+                } else res.status(409).json({ message: 'Invalid price or day value.' });
+            } else res.status(400).json({ message: 'All params are required.' });
         } else res.status(404).json({ message: 'This id does not exist.' })
     } catch(error) {
         res.status(500).json({ message: 'Internal Server Error'} );

@@ -26,9 +26,16 @@ router.route('/seats/:id').get((req, res) => {
 router.route('/seats').post((req, res) => {
     try {
         const { day, seat, client, email } = req.body;
+        const parsedDay = parseInt(day);
+        const parsedSeat = parseInt(seat);
         if(day && seat && client && email) {
-            db.seats.push({ id: uuid, day, seat, client, email });
-            res.json({ message: 'OK' });
+            if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
+                const reservedSeat = db.seats.find(takenSeat => takenSeat.day === parsedDay && takenSeat.seat === parsedSeat);
+                if(!reservedSeat){
+                    db.seats.push({ id: uuid, day: parsedDay, seat: parsedSeat, client, email });
+                    res.json({ message: 'OK' });
+                } else res.status(409).json({ message: 'The slot is already taken...' });
+            } else res.status(400).json({ message: 'Invalid day or seat value.'})
         } else res.status(400).json({ message: 'All params are required.'});
     } catch(error) {
         res.status(500).json({ message: 'Internal Server Error' });
@@ -38,17 +45,17 @@ router.route('/seats').post((req, res) => {
 router.route('/seats/:id').put((req, res) => {
     try {
         const { day, seat, client, email } = req.body;
+        const parsedDay = parseInt(day);
+        const parsedSeat = parseInt(seat);
         const dataToEdit = db.seats.find(data => data.id === req.params.id);
         if(dataToEdit) {
             if(day && seat && client && email) {
-                Object.assign(dataToEdit, {day, seat, client, email});
-                res.json( { message: 'OK' });
-            } else {
-                res.status(400).json({ message: 'All params are required.' });
-            }
-        } else {
-            res.status(404).json({ message: 'This id does not exist.' });
-        }
+                if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
+                    Object.assign(dataToEdit, {day, seat, client, email});
+                    res.json( { message: 'OK' });
+                } else res.status(409).json({ message: 'Invalid day or seat value.'});
+            } else res.status(400).json({ message: 'All params are required.' });
+        } else res.status(404).json({ message: 'This id does not exist.' });
     } catch(error){
         res.status(500).json({ message: 'Internal Server Error' });
     }
@@ -61,9 +68,7 @@ router.route('/seats/:id').delete((req, res) => {
             const dataToRemoveIndex = db.seats.indexOf(dataToRemove);
             db.seats.splice(dataToRemoveIndex, 1);
             res.json({ message: 'OK' });
-        } else {
-            res.status(404).json({ message: 'This id does not exist...' });
-        }
+        } else res.status(404).json({ message: 'This id does not exist...' });
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error'});
     }
