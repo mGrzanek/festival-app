@@ -30,7 +30,7 @@ router.route('/seats').post((req, res) => {
         const parsedSeat = parseInt(seat);
         if(day && seat && client && email) {
             if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
-                const reservedSeat = db.seats.find(takenSeat => takenSeat.day === parsedDay && takenSeat.seat === parsedSeat);
+                const reservedSeat = db.seats.some(takenSeat => takenSeat.day === parsedDay && takenSeat.seat === parsedSeat);
                 if(!reservedSeat){
                     db.seats.push({ id: uuid, day: parsedDay, seat: parsedSeat, client, email });
                     res.json({ message: 'OK' });
@@ -51,7 +51,7 @@ router.route('/seats/:id').put((req, res) => {
         if(dataToEdit) {
             if(day && seat && client && email) {
                 if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
-                    const reservedSeat = db.seats.find(takenSeat => takenSeat.day === parsedDay && takenSeat.seat === parsedSeat);
+                    const reservedSeat = db.seats.some(takenSeat => takenSeat.day === parsedDay && takenSeat.seat === parsedSeat);
                     if(!reservedSeat){
                         Object.assign(dataToEdit, {day, seat, client, email});
                         res.json( { message: 'OK' });
