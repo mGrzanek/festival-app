@@ -51,9 +51,12 @@ router.route('/seats/:id').put((req, res) => {
         if(dataToEdit) {
             if(day && seat && client && email) {
                 if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
-                    Object.assign(dataToEdit, {day, seat, client, email});
-                    res.json( { message: 'OK' });
-                } else res.status(409).json({ message: 'Invalid day or seat value.'});
+                    const reservedSeat = db.seats.find(takenSeat => takenSeat.day === parsedDay && takenSeat.seat === parsedSeat);
+                    if(!reservedSeat){
+                        Object.assign(dataToEdit, {day, seat, client, email});
+                        res.json( { message: 'OK' });
+                    } else res.status(409).json({ message: 'The slot is already taken...' });
+                } else res.status(400).json({ message: 'Invalid day or seat value.'});
             } else res.status(400).json({ message: 'All params are required.' });
         } else res.status(404).json({ message: 'This id does not exist.' });
     } catch(error){
