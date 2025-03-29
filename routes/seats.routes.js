@@ -33,6 +33,7 @@ router.route('/seats').post((req, res) => {
                 const reservedSeat = db.seats.some(takenSeat => takenSeat.day === parsedDay && takenSeat.seat === parsedSeat);
                 if(!reservedSeat){
                     db.seats.push({ id: uuid, day: parsedDay, seat: parsedSeat, client, email });
+                    req.io.emit('seatsUpdated', db.seats);
                     res.json({ message: 'OK' });
                 } else res.status(409).json({ message: 'The slot is already taken...' });
             } else res.status(400).json({ message: 'Invalid day or seat value.'})
