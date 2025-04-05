@@ -5,7 +5,7 @@ const app = express();
 const cors = require('cors');
 const path = require('path');
 const concertRouter = require('./routes/concerts.routes');
-//const seatsRouter = require('./routes/seats.routes');
+const seatsRouter = require('./routes/seats.routes');
 //const testimonialsRouter = require('./routes/testimonials.routes');
 
 const server = app.listen(process.env.PORT || 8000, () => {
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
     next();
   });
 app.use('/api', concertRouter);
-// app.use('/api', seatsRouter);
+app.use('/api', seatsRouter);
 // app.use('/api', testimonialsRouter);
 
 app.get('*', (req, res) => {

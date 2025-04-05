@@ -1,21 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./../db/db');
-const { v4: uuidv4 } = require('uuid');
-const uuid = uuidv4();
+const Seat = require('./../models/seats.model');
 
-router.route('/seats').get((reg, res) => {
+router.route('/seats').get( async (reg, res) => {
     try {
-        if(db.seats.length > 0) res.json(db.seats);
+        const seats = await Seat.find();
+        if(seats.length > 0) res.json(seats);
         else res.status(404).json({  message: 'Empty seats database.' });
     } catch {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
 
-router.route('/seats/:id').get((req, res) => {
+router.route('/seats/:id').get( async (req, res) => {
     try {
-        const selectedData = db.seats.find(data => data.id === req.params.id);
+        const selectedData = await Seat.findById(req.params.id);
         if(selectedData) res.json(selectedData);
         else res.status(404).json({ message: 'This id does not exist.' });
     } catch (error) {
@@ -23,17 +22,18 @@ router.route('/seats/:id').get((req, res) => {
     }
 });
 
-router.route('/seats').post((req, res) => {
+router.route('/seats').post( async (req, res) => {
     try {
         const { day, seat, client, email } = req.body;
         const parsedDay = parseInt(day);
         const parsedSeat = parseInt(seat);
         if(day && seat && client && email) {
             if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
-                const reservedSeat = db.seats.some(takenSeat => takenSeat.day === parsedDay && takenSeat.seat === parsedSeat);
+                const reservedSeat = await Seat.findOne({ day: parsedDay, seat: parsedSeat });
                 if(!reservedSeat){
-                    db.seats.push({ id: uuid, day: parsedDay, seat: parsedSeat, client, email });
-                    req.io.emit('seatsUpdated', db.seats);
+                    const newSeat = new Seat({ day: parsedDay, seat: parsedSeat, client, email });
+                    newSeat.save();
+                    req.io.emit('seatsUpdated', await Seat.find());
                     res.json({ message: 'OK' });
                 } else res.status(409).json({ message: 'The slot is already taken...' });
             } else res.status(400).json({ message: 'Invalid day or seat value.'})
@@ -43,18 +43,18 @@ router.route('/seats').post((req, res) => {
     }
 });
 
-router.route('/seats/:id').put((req, res) => {
+router.route('/seats/:id').put( async (req, res) => {
     try {
         const { day, seat, client, email } = req.body;
         const parsedDay = parseInt(day);
         const parsedSeat = parseInt(seat);
-        const dataToEdit = db.seats.find(data => data.id === req.params.id);
+        const dataToEdit = await Seat.findById(req.params.id);
         if(dataToEdit) {
             if(day && seat && client && email) {
                 if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
-                    const reservedSeat = db.seats.some(takenSeat => takenSeat.day === parsedDay && takenSeat.seat === parsedSeat);
-                    if(!reservedSeat){
-                        Object.assign(dataToEdit, {day, seat, client, email});
+                    const reservedSeat = await Seat.findOne({ day: parsedDay, seat: parsedSeat });
+                    if(!reservedSeat || reservedSeat.seat === dataToEdit.seat){
+                        await dataToEdit.updateOne({$set: {day: parsedDay, seat: parsedSeat, client, email}});
                         res.json( { message: 'OK' });
                     } else res.status(409).json({ message: 'The slot is already taken...' });
                 } else res.status(400).json({ message: 'Invalid day or seat value.'});
@@ -65,12 +65,11 @@ router.route('/seats/:id').put((req, res) => {
     }
 });
 
-router.route('/seats/:id').delete((req, res) => {
+router.route('/seats/:id').delete( async (req, res) => {
     try {
-        const dataToRemove = db.seats.find(data => data.id === req.params.id);
+        const dataToRemove = await Seat.findById(req.params.id);
         if(dataToRemove){
-            const dataToRemoveIndex = db.seats.indexOf(dataToRemove);
-            db.seats.splice(dataToRemoveIndex, 1);
+            await dataToRemove.deleteOne();
             res.json({ message: 'OK' });
         } else res.status(404).json({ message: 'This id does not exist...' });
     } catch (error) {

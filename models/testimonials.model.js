@@ -5,4 +5,4 @@ const testimonialSchema = new mongoose.Schema({
     text: { type: String, required: true },
 });
 
-module.exports = mongoose.module('Testimonial', testimonialSchema);
+module.exports = mongoose.model('Testimonial', testimonialSchema);
