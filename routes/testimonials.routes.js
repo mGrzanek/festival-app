@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./../db/db');
-const { v4: uuidv4 } = require('uuid');
-const uuid = uuidv4();
+const Testimonial = require('./../models/testimonials.model');
 
-router.route('/testimonials/random').get((req, res) => {
+router.route('/testimonials/random').get( async (req, res) => {
     try {
-        if(db.testimonials.length > 0) {
-            const randomData = db.testimonials[Math.floor(Math.random() * db.testimonials.length)];
+        const count = await Testimonial.countDocuments();
+        if(count > 0) {
+            const rand = Math.floor(Math.random() * count);
+            const randomData = await Testimonial.findOne().skip(rand);
             res.json(randomData);
         } else res.status(404).json({ message: 'Empty testimonials database.'});   
     } catch (error){
@@ -15,18 +15,19 @@ router.route('/testimonials/random').get((req, res) => {
     }
 });
 
-router.route('/testimonials').get((req, res) => {
+router.route('/testimonials').get( async (req, res) => {
     try {
-        if(db.testimonials.length > 0) res.json(db.testimonials);
+        const testimonials = await Testimonial.find();
+        if(testimonials.length > 0) res.json(testimonials);
         else res.status(404).json({ message: 'Empty testimonials database.'});
     } catch(error) {
         res.status(500).json({ message: 'Internal Server Error'});
     }
 });
 
-router.route('/testimonials/:id').get((req, res) => {
+router.route('/testimonials/:id').get( async (req, res) => {
     try {
-        const selectedData = db.testimonials.find(data => data.id === req.params.id);
+        const selectedData = await Testimonial.findById(req.params.id);
             if(selectedData) res.json(selectedData);
             else res.status(404).json({ message: 'This id does not exist.' });
     } catch(error) {
@@ -34,12 +35,12 @@ router.route('/testimonials/:id').get((req, res) => {
     }
 });
 
-router.route('/testimonials').post((req, res) => {
+router.route('/testimonials').post( async (req, res) => {
     try {
         const { author, text } = req.body;
-
         if( author && text ) {
-            db.testimonials.push({ id: uuid, author, text });
+            const newTestimonial = new Testimonial({ author, text });
+            await newTestimonial.save();
             res.json({ message: 'OK' });
         } else res.status(400).json({ message: 'All params are required.' });
     } catch(error) {
@@ -47,13 +48,13 @@ router.route('/testimonials').post((req, res) => {
     }
 });
 
-router.route('/testimonials/:id').put((req, res) => {
+router.route('/testimonials/:id').put( async (req, res) => {
     try {
         const { author, text } = req.body;
-        const dataToEdit = db.testimonials.find(data => data.id === req.params.id);
+        const dataToEdit = await Testimonial.findById(req.params.id);
         if(dataToEdit){
             if(author && text) {
-                Object.assign(dataToEdit, {author, text});
+                await dataToEdit.updateOne({$set: {author, text}});
                 res.json({ message: 'OK' });
             } else res.status(400).json({ message: 'All params are required.' });
         } else res.status(404).json({ message: 'This id does not exist.' });
@@ -62,12 +63,11 @@ router.route('/testimonials/:id').put((req, res) => {
     }
 });
 
-router.route('/testimonials/:id').delete((req, res) => {
+router.route('/testimonials/:id').delete( async (req, res) => {
     try {
-        const dataToRemove = db.testimonials.find(data => data.id === req.params.id);
+        const dataToRemove = await Testimonial.findById(req.params.id);
         if(dataToRemove) {
-            const dataToRemoveIndex = db.testimonials.indexOf(dataToRemove);
-            db.testimonials.splice(dataToRemoveIndex, 1);
+            await dataToRemove.deleteOne();
             res.json({ message: 'OK '});
         } else res.status(404).json({ message: 'This id does not exist.' });
     } catch(error) {
