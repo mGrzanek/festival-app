@@ -1,21 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const db = require('./../db/db');
-const { v4: uuidv4 } = require('uuid');
-const uuid = uuidv4();
+const Concert = require('./../models/concerts.models');
 
-router.route('/concerts').get((req, res) => {
+router.route('/concerts').get( async (req, res) => {
     try {
-        if(db.concerts.length > 0) res.json(db.concerts);
+        const concerts = await Concert.find();
+        if(concerts.length > 0) res.json(concerts);
         else res.status(404).json({ message: 'Empty concerts database.' });
     } catch(error) {
         res.status(500).json({ message: 'Internal Server Error'});
     }
 });
 
-router.route('/concerts/:id').get((req, res) => {
+router.route('/concerts/:id').get( async (req, res) => {
     try {
-        const selectedData = db.concerts.find(data => data.id === req.params.id);
+        const selectedData = await Concert.findById(req.params.id);
         if(selectedData) res.json(selectedData);
         else res.status(404).json({ message: 'This id does not exist.' });
     } catch(error) {
@@ -23,14 +22,15 @@ router.route('/concerts/:id').get((req, res) => {
     }
 });
 
-router.route('/concerts').post((req, res) => {
+router.route('/concerts').post( async (req, res) => {
     try{
         const { performer, genre, price, day, image } = req.body;
         if( performer && genre && price && day && image ) {
             const parsedPrice = parseInt(price);
             const parsedDay = parseInt(day);
             if(!isNaN(parsedDay) && !isNaN(parsedPrice)){
-                db.concerts.push({ id: uuid, performer, genre, price: parsedPrice, day: parsedDay, image });
+                const newConcert = new Concert({ performer, genre, price, day, image });
+                await newConcert.save();
                 res.json({ message: 'OK' });
             } else res.status(400).json({ message: 'Invalid price or day value.'});
         } else res.status(400).json({ message: 'All params are required.' });
@@ -39,16 +39,16 @@ router.route('/concerts').post((req, res) => {
     }
 });
 
-router.route('/concerts/:id').put((req, res) => {
+router.route('/concerts/:id').put( async (req, res) => {
     try {
-        const dataToEdit = db.concerts.find(data => data.id === req.params.id);
+        const dataToEdit = await Concert.findById(req.params.id);
         const { performer, genre, price, day, image } = req.body;
         if(dataToEdit){
             if(performer && genre && price && day && image) {
                 const parsedPrice = parseInt(price);
                 const parsedDay = parseInt(day);
                 if(!isNaN(parsedDay) && !isNaN(parsedPrice)){
-                    Object.assign(dataToEdit, {performer, genre, price, day, image});
+                    await dataToEdit.updateOne({$set: {performer, genre, price: parsedPrice, day: parsedDay, image}});
                     res.json({ message: 'OK' });
                 } else res.status(400).json({ message: 'Invalid price or day value.' });
             } else res.status(400).json({ message: 'All params are required.' });
@@ -58,12 +58,11 @@ router.route('/concerts/:id').put((req, res) => {
     }
 });
 
-router.route('/concerts/:id').delete((req, res) => {
+router.route('/concerts/:id').delete( async (req, res) => {
     try {
-        const dataToRemove = db.concerts.find(data => data.id === req.params.id);
+        const dataToRemove = await Concert.findById(req.params.id);
         if(dataToRemove){
-            const dataToRemoveIndex = db.concerts.indexOf(dataToRemove);
-            db.concerts.splice(dataToRemoveIndex, 1);
+            await dataToRemove.deleteOne();
             res.json({ message: 'OK' });
         } else res.status(404).json({ message: 'This id does not exist.'});
     } catch (error) {
