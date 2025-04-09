@@ -4,20 +4,22 @@ const PriceInfo = ({day, price, workshops}) => {
     const [concertDay, setConcertDay] = useState('');
 
     useEffect(() => {
-        if(day === 1){
-            setConcertDay('one');
-        } else if(day === 2){
-            setConcertDay('two');
-        } else if(day === 3){
-            setConcertDay('three');
-        } else return(<p>Something went wrong...</p>);
+        if(day === 1) setConcertDay('one');
+        else if(day === 2) setConcertDay('two'); 
+        else if(day === 3) setConcertDay('three');
+        else return(<p>Something went wrong...</p>);
     }, [day]);
 
     return(
         <>
             <h2>Day {concertDay}</h2>
             <p>Price: {price}</p>
-            <p>Workshops: {workshops}</p>
+            <p>Workshops: {workshops.map((workshop, index) => (
+                    <span key={index}>
+                        {workshop}{index < workshops.length - 1 && ', '}
+                    </span>
+                ))}
+            </p>
         </>
     );
 };
