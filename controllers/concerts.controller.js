@@ -23,11 +23,11 @@ exports.getOne = async (req, res) => {
 exports.addNew =  async (req, res) => {
     try{
         const { performer, genre, price, day, image } = req.body;
-        if( performer && genre && price && day && image ) {
+        if( performer && genre && price && day && image && workshops ) {
             const parsedPrice = parseInt(price);
             const parsedDay = parseInt(day);
             if(!isNaN(parsedDay) && !isNaN(parsedPrice)){
-                const newConcert = new Concert({ performer, genre, price, day, image });
+                const newConcert = new Concert({ performer, genre, price, day, image, workshops });
                 await newConcert.save();
                 res.json({ message: 'OK' });
             } else res.status(400).json({ message: 'Invalid price or day value.'});
@@ -46,7 +46,7 @@ exports.editOne = async (req, res) => {
                 const parsedPrice = parseInt(price);
                 const parsedDay = parseInt(day);
                 if(!isNaN(parsedDay) && !isNaN(parsedPrice)){
-                    await dataToEdit.updateOne({$set: {performer, genre, price: parsedPrice, day: parsedDay, image}});
+                    await dataToEdit.updateOne({$set: {performer, genre, price: parsedPrice, day: parsedDay, image, workshops }});
                     res.json({ message: 'OK' });
                 } else res.status(400).json({ message: 'Invalid price or day value.' });
             } else res.status(400).json({ message: 'All params are required.' });

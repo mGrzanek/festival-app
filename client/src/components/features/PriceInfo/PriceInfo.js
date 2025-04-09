@@ -13,7 +13,7 @@ const PriceInfo = ({day, price, workshops}) => {
     return(
         <>
             <h2>Day {concertDay}</h2>
-            <p>Price: {price}</p>
+            <p>Price: {price}$</p>
             <p>Workshops: {workshops.map((workshop, index) => (
                     <span key={index}>
                         {workshop}{index < workshops.length - 1 && ', '}
