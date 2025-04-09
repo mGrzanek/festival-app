@@ -22,7 +22,7 @@ exports.getOne = async (req, res) => {
 
 exports.addNew =  async (req, res) => {
     try{
-        const { performer, genre, price, day, image } = req.body;
+        const { performer, genre, price, day, image, workshops } = req.body;
         if( performer && genre && price && day && image && workshops ) {
             const parsedPrice = parseInt(price);
             const parsedDay = parseInt(day);
@@ -40,9 +40,9 @@ exports.addNew =  async (req, res) => {
 exports.editOne = async (req, res) => {
     try {
         const dataToEdit = await Concert.findById(req.params.id);
-        const { performer, genre, price, day, image } = req.body;
+        const { performer, genre, price, day, image, workshops } = req.body;
         if(dataToEdit){
-            if(performer && genre && price && day && image) {
+            if(performer && genre && price && day && image && workshops) {
                 const parsedPrice = parseInt(price);
                 const parsedDay = parseInt(day);
                 if(!isNaN(parsedDay) && !isNaN(parsedPrice)){
