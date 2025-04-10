@@ -3,6 +3,7 @@ const socket = require('socket.io');
 const mongoose = require('mongoose');
 const app = express();
 const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
 const concertRouter = require('./routes/concerts.routes');
 const seatsRouter = require('./routes/seats.routes');
@@ -17,6 +18,7 @@ io.on('connection', (socket) => {
     console.log('New socket!');
 });
 
+app.use(helmet());
 app.use(express.static(path.join(__dirname, '/client/build')));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());

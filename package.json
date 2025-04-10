@@ -12,7 +12,10 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "helmet": "3.21.1",
+    "mongo-sanitize": "1.0.1",
     "mongoose": "7.4.3",
+    "snyk": "^1.1296.1",
     "socket.io": "4.7.2",
     "uuid": "^11.1.0"
   }

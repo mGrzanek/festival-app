@@ -1,4 +1,5 @@
 const Seat = require('./../models/seats.model');
+const sanitize = require('mongo-sanitize');
 
 exports.getAll = async (req, res) => {
     try {
@@ -21,11 +22,12 @@ exports.getOne = async (req, res) => {
 }
 
 exports.addNew = async (req, res) => {
-    try {
-        const { day, seat, client, email } = req.body;
-        const parsedDay = parseInt(day);
-        const parsedSeat = parseInt(seat);
-        if(day && seat && client && email) {
+    try {     
+        const parsedDay = parseInt(sanitize(req.body.day));
+        const parsedSeat = parseInt(sanitize(req.body.seat));
+        const client = sanitize(req.body.client);
+        const email = sanitize(req.body.email);
+        if(parsedDay && parsedSeat && client && email) {
             if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
                 const reservedSeat = await Seat.findOne({ day: parsedDay, seat: parsedSeat });
                 if(!reservedSeat){
@@ -43,12 +45,13 @@ exports.addNew = async (req, res) => {
 
 exports.editOne = async (req, res) => {
     try {
-        const { day, seat, client, email } = req.body;
-        const parsedDay = parseInt(day);
-        const parsedSeat = parseInt(seat);
+        const parsedDay = parseInt(sanitize(req.body.day));
+        const parsedSeat = parseInt(sanitize(req.body.seat));
+        const client = sanitize(req.body.client);
+        const email = sanitize(req.body.email);
         const dataToEdit = await Seat.findById(req.params.id);
         if(dataToEdit) {
-            if(day && seat && client && email) {
+            if(parsedDay && parsedSeat && client && email) {
                 if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
                     const reservedSeat = await Seat.findOne({ day: parsedDay, seat: parsedSeat });
                     if(!reservedSeat || reservedSeat.seat === dataToEdit.seat){
