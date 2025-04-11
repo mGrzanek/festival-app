@@ -32,13 +32,19 @@ exports.addNew = async (req, res) => {
                 const reservedSeat = await Seat.findOne({ day: parsedDay, seat: parsedSeat });
                 if(!reservedSeat){
                     const newSeat = new Seat({ day: parsedDay, seat: parsedSeat, client, email });
-                    newSeat.save();
+                    await newSeat.save();
                     req.io.emit('seatsUpdated', await Seat.find());
                     res.json({ message: 'OK' });
                 } else res.status(409).json({ message: 'The slot is already taken...' });
             } else res.status(400).json({ message: 'Invalid day or seat value.'})
         } else res.status(400).json({ message: 'All params are required.'});
     } catch(error) {
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                message: 'Invalid params',
+                errors: Object.values(error.errors).map(err => err.message)
+            });
+        }
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
@@ -55,13 +61,19 @@ exports.editOne = async (req, res) => {
                 if(!isNaN(parsedDay) && !isNaN(parsedSeat)) {
                     const reservedSeat = await Seat.findOne({ day: parsedDay, seat: parsedSeat });
                     if(!reservedSeat || reservedSeat.seat === dataToEdit.seat){
-                        await dataToEdit.updateOne({$set: {day: parsedDay, seat: parsedSeat, client, email}});
+                        await dataToEdit.updateOne({$set: {day: parsedDay, seat: parsedSeat, client, email}}, { runValidators: true });
                         res.json( { message: 'OK' });
                     } else res.status(409).json({ message: 'The slot is already taken...' });
                 } else res.status(400).json({ message: 'Invalid day or seat value.'});
             } else res.status(400).json({ message: 'All params are required.' });
         } else res.status(404).json({ message: 'This id does not exist.' });
     } catch(error){
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({
+                message: 'Invalid params',
+                errors: Object.values(error.errors).map(err => err.message)
+            });
+        }
         res.status(500).json({ message: 'Internal Server Error' });
     }
 }
