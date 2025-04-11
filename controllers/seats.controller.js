@@ -13,9 +13,17 @@ exports.getAll = async (req, res) => {
 
 exports.getOne = async (req, res) => {
     try {
-        const selectedData = await Seat.findById(req.params.id);
-        if(selectedData) res.json(selectedData);
-        else res.status(404).json({ message: 'This id does not exist.' });
+        if(typeof(req.params) !== 'string'){
+            return res.status(400).json({ message: 'Invalid id!'});
+        }
+        const id = sanitize(req.params.id);
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid id...' });
+        } else {
+            const selectedData = await Seat.findById(id);
+            if(selectedData) res.json(selectedData);
+            else res.status(404).json({ message: 'This id does not exist.' });
+        }
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error' });
     }
@@ -80,11 +88,19 @@ exports.editOne = async (req, res) => {
 
 exports.removeOne = async (req, res) => {
     try {
-        const dataToRemove = await Seat.findById(req.params.id);
-        if(dataToRemove){
-            await dataToRemove.deleteOne();
-            res.json({ message: 'OK' });
-        } else res.status(404).json({ message: 'This id does not exist...' });
+        if(typeof(req.params) !== 'string'){
+            return res.status(400).json({ message: 'Invalid id!'});
+        }
+        const id = sanitize(req.params.id);
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid id...' });
+        } else {
+            const dataToRemove = await Seat.findById(id);
+            if(dataToRemove){
+                await dataToRemove.deleteOne();
+                res.json({ message: 'OK' });
+            } else res.status(404).json({ message: 'This id does not exist...' });
+        }
     } catch (error) {
         res.status(500).json({ message: 'Internal Server Error'});
     }
