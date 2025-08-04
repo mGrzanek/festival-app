@@ -4,7 +4,7 @@ exports.getAll = async (req, res) => {
     try {
         const concerts = await Concert.find();
         if(concerts.length > 0) res.json(concerts);
-        else res.status(404).json({ message: 'Empty concerts database.' });
+        else res.status(404).json({ message: 'No ads.' });
     } catch(error) {
         res.status(500).json({ message: 'Internal Server Error'});
     }

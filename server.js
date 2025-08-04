@@ -1,6 +1,7 @@
 const express = require('express');
 const socket = require('socket.io');
 const mongoose = require('mongoose');
+require('dotenv').config();
 const app = express();
 const cors = require('cors');
 const helmet = require('helmet');
@@ -39,7 +40,7 @@ app.use((req, res) => {
     res.status(404).json({ message: 'Not found...' });
 });
 
-mongoose.connect('mongodb+srv://grzanekmonika:YLIlGF8h0IWxd9jg@clustermonika.qjhod0w.mongodb.net/NewWaveDB?retryWrites=true&w=majority&appName=ClusterMonika', { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 const db = mongoose.connection;
 
 db.once('open', () => {
