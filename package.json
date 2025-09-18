@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "test": "mocha --watch"
   },
   "keywords": [],
   "author": "Monika",
@@ -19,5 +20,9 @@
     "snyk": "^1.1296.1",
     "socket.io": "4.7.2",
     "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.1"
   }
 }
