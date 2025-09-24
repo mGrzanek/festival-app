@@ -1,5 +1,6 @@
 const expect = require('chai').expect;
 const Concert = require('./../concerts.models'); 
+const expectParamValidationError = require('./utils/expectParamValidationError');
 
 describe('Concert Model', () => {
     const fields = [
@@ -20,16 +21,11 @@ describe('Concert Model', () => {
         workshops: ["ABC", "Lorem Ipsum"]
     };
 
+    const makeConcert = (data) => new Concert({...validData, ...data});
+
     it('should return an error if required fields are missing', async () => {
         const concert = new Concert({});
-        try {
-            await concert.validate();
-            throw new Error('Validation should have failed');
-        } catch (err) {
-            for(let field of fields){
-                expect(err.errors[field.name]).to.exist;
-            }
-        }
+        await expectParamValidationError(concert, fields);
     });
 
     it('should return an error if field types are incorrect', async () => {
@@ -42,37 +38,25 @@ describe('Concert Model', () => {
         for(let field of fields) {
             for(let invalidValue of invalidValues[field.type]) {
                 const testData = { ...validData, [field.name]: invalidValue };
-                const concert = new Concert(testData);
-                try {
-                    await concert.validate();
-                    throw new Error('Validation should have failed');
-                } catch (err) {
-                    expect(err.errors[field.name]).to.exist;
-                }
+                await expectParamValidationError(makeConcert(testData), field.name);
             }
         }
     });
 
     it('should throw an error if value is too short or too long', async () => {
         const cases = {
-            performer: ["    ", " ", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ornare diam vitae orci convallis efficitur. Euallo via met ornare diam vitae orci convallis efficitur."],
-            genre: [" ",  "", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ornare diam vitae orci convallis efficitur. "],
+            performer: ["    ", " ", "A".repeat(46)],
+            genre: [" ",  "", "A".repeat(26)],
             price: [-50, -3, 0],
             day: [-40, -6, 0, 5, 14, 100],
-            image: [" ", "", ".jpeg", ".jpg", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ornare diam vitae orci convallis efficitur. ornare diam vitae orci convallis efficitur.jpg" ],
-            workshops: ["A", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ornare diam vitae orci convallis efficitur. Euallo via met ornare diam vitae orci convallis.", " " ]
+            image: [" ", "", ".jpeg", "A".repeat(42) + ".jpg" ],
+            workshops: ["A", "A".repeat(31), " " ]
         };
 
         for(let param in cases) {
             for(let value of cases[param]){
                 const testData = { ...validData, [param]: value}
-                const concert = new Concert(testData);
-                try {
-                    await concert.validate();
-                    throw new Error('Validation should have failed.');
-                } catch(err) {
-                    expect(err.errors[param]).to.exist;
-                }
+                await expectParamValidationError(makeConcert(testData), param);
             }
         }
     });
@@ -81,13 +65,7 @@ describe('Concert Model', () => {
         const cases = [ "lorem", "abc.mp3", "lorem.txt", "loremipsum.pdf"];
         for(let data of cases){
             const testData = {...validData, image: data};
-            const concert = new Concert(testData);
-            try {
-                await concert.validate();
-                throw new Error('Validation should have failed.');
-            } catch(err) {
-                expect(err.errors.image).to.exist;
-            }
+            await expectParamValidationError(makeConcert(testData), "image");
         }
     });
 
@@ -97,14 +75,14 @@ describe('Concert Model', () => {
             genre: ["Pop", "Rock", "Country", "Reggae"],
             price: [10, 55, 100],
             day: [1, 2, 3],
-            image: ["abc12345.jpg", "abc.png", "abc.gif", "loremipsumdolorsitametvialavitea.webp", "loremipsum.jpeg"],
+            image: ["abc12345.jpg", "abc.png", "abc.gif", "loremipsum.webp", "loremipsum.jpeg"],
             workshops: ["ABC", "123", "Dance and Fun"],
         };
 
         for(let data in cases) {
             for(let value of cases[data]){
                 const testData = { ...validData, [data]: value};
-                const concert = new Concert(testData);
+                const concert = makeConcert(testData);
                 await concert.validate();   
             }       
         }
