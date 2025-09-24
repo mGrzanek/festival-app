@@ -13,8 +13,10 @@ const concertSchema = mongoose.Schema({
         trim: true,
         validate: {
             validator: function(val) {
-                const ext = val.split('.').pop().toLowerCase();
-                return ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+                const arr = val.split('.');
+                const ext = arr.pop().toLowerCase().trim();
+                const filename = arr[0].trim();
+                return ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext) && filename.length > 0;
             },
             message: 'Wrong image file (only .jpg, .jpeg, .png, .webp, .gif allowed).'
         }},
@@ -23,7 +25,7 @@ const concertSchema = mongoose.Schema({
         required: true, 
         validate: {
             validator: function (val) {
-                return Array.isArray(val) && val.length > 0;
+                return Array.isArray(val) && val.length > 0 && val.every(v => v.length > 1 && v.length <= 30);
             },
             message: 'Workshops must be a non-empty array',
         }, 
