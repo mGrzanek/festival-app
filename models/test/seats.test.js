@@ -42,7 +42,7 @@ describe('Seat model', () => {
             day: [-50, -13, 0, 5, 44],
             seat: [-100, - 28, 0, 51, 100],
             client: ["", " ", "A", "AB", "A".repeat(61)],
-            email: ["", " ", "@", "@l", "john@.com", "lorem#ipsum@example.com", "a".repeat(35) + "@example.com" ],
+            email: ["", " ", "@", "@l", "a".repeat(35) + "@example.com" ],
         };
 
         for(let data in cases) {
@@ -54,7 +54,7 @@ describe('Seat model', () => {
     });
 
     it('should throw an error if email value incorrect', async () => {
-        const cases = [" ", "lorem", "@co", "example@aa", "@", "example.aa.c"];
+        const cases = [" ", "lorem", "john@.com", "lorem#ipsum@example.com", "@co", "example@aa", "@", "example.aa.c"];
         for(let data of cases) {
             const testData = {...validData, email: data};
             await expectParamValidationError(makeSeat(testData), "email");
