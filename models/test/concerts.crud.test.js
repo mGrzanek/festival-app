@@ -3,7 +3,6 @@ const Concert = require('./../concerts.models');
 const expect = require('chai').expect;
 
 describe('Concert CRUD', function() {
-    this.timeout(10000);
     before(async () => {
         try {
             await mongoose.connect('mongodb://127.0.0.1:27017/festivalDBtest', { useNewUrlParser: true, useUnifiedTopology: true });
