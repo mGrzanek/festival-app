@@ -58,7 +58,12 @@ describe('Seat CRUD', function() {
             await seat.save();
             const savedSeat = await Seat.findOne({client: "Emilly Doe"});
             expect(savedSeat.isNew).to.be.false;
-        })
+        });
+
+        after(async () => {
+            await Seat.deleteMany();
+        });
+        
     });
 
     describe('Updating data', () => {
@@ -137,6 +142,10 @@ describe('Seat CRUD', function() {
             await Seat.deleteMany({});
             const seats = await Seat.find();
             expect(seats.length).to.be.equal(0);
+        });
+
+         afterEach(async () => {
+            await Seat.deleteMany();
         });
     });
 });

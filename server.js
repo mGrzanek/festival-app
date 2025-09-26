@@ -10,8 +10,16 @@ const concertRouter = require('./routes/concerts.routes');
 const seatsRouter = require('./routes/seats.routes');
 const testimonialsRouter = require('./routes/testimonials.routes');
 
+const NODE_ENV = process.env.NODE_ENV;
+let dbUri = '';
+
+if(NODE_ENV === 'production') dbUri = process.env.MONGODB_URI;
+else if(NODE_ENV === 'test') dbUri = process.env.MONGODB_URI_TEST;
+else dbUri = process.env.MONGODB_URI_LOCAL;
+
+
 const server = app.listen(process.env.PORT || 8000, () => {
-    console.log('Server is running...');
+    if(NODE_ENV !== 'test' ) console.log('Server is running...');
 });
 
 const io = socket(server);
@@ -40,10 +48,12 @@ app.use((req, res) => {
     res.status(404).json({ message: 'Not found...' });
 });
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
+mongoose.connect(dbUri, { useNewUrlParser: true });
 const db = mongoose.connection;
 
 db.once('open', () => {
   console.log('Connected to the database');
 });
 db.on('error', err => console.log('Error ' + err));
+
+module.exports = server;

@@ -1,4 +1,5 @@
 const Seat = require('./../models/seats.model');
+const mongoose = require('mongoose');
 const sanitize = require('mongo-sanitize');
 
 exports.getAll = async (req, res) => {
@@ -13,9 +14,6 @@ exports.getAll = async (req, res) => {
 
 exports.getOne = async (req, res) => {
     try {
-        if(typeof(req.params) !== 'string'){
-            return res.status(400).json({ message: 'Invalid id!'});
-        }
         const id = sanitize(req.params.id);
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: 'Invalid id...' });
@@ -88,9 +86,6 @@ exports.editOne = async (req, res) => {
 
 exports.removeOne = async (req, res) => {
     try {
-        if(typeof(req.params) !== 'string'){
-            return res.status(400).json({ message: 'Invalid id!'});
-        }
         const id = sanitize(req.params.id);
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: 'Invalid id...' });
