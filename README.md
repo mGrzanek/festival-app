@@ -14,25 +14,45 @@ Project: https://festival-app-r92u.onrender.com
 - **Backend:** Node.js, Express.js, MongoDB, Mongoose, WebSocket
 - **Testing:** Mocha, Chai.js
 
-## Configuration
-To run the application, you need an `.env` file with configuration data.
-Copy the .env.example file as .env:
+## Installation & Configuration
 
-`cp .env.example .env`
+1. Clone the repository:
+
+```bash
+git git@github.com:mGrzanek/festival-app.git
+cd festival-app
+```
+
+2. Create a .env file based on .env.example.
+
+
+```bash
+cp .env.example .env
+```
 
 Insert your data into the key values.
 
-Then install the necessary packages using:
+3. Install dependencies:
 
 `npm install`
-or
-`yarn install`
 
-To start the application use: 
+4. Start the application from root with: 
 
-`npm start`
-or
-`yarn start`
+```bash
+npm start
+```
+
+5. Open your local browser:
+
+`http://localhost:8000`
+
+## Testing
+
+Launch the test runner in interactive watch mode:
+
+```bash
+npm test
+```
 
 ## Author
 
