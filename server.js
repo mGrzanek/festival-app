@@ -13,7 +13,7 @@ const testimonialsRouter = require('./routes/testimonials.routes');
 const NODE_ENV = process.env.NODE_ENV;
 let dbUri;
 
-if(NODE_ENV === 'production') dbUri = process.env.MONGODB_URI;
+if(NODE_ENV === 'production') dbUri = process.env.MONGODB_URI_REMOTE;
 else if(NODE_ENV === 'test') dbUri = process.env.MONGODB_URI_TEST;
 else dbUri = process.env.MONGODB_URI_LOCAL;
 
