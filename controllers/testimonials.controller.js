@@ -66,7 +66,7 @@ exports.removeOne = async (req, res) => {
         const dataToRemove = await Testimonial.findById(req.params.id);
         if(dataToRemove) {
             await dataToRemove.deleteOne();
-            res.json({ message: 'OK '});
+            res.json({ message: 'OK'});
         } else res.status(404).json({ message: 'This id does not exist.' });
     } catch(error) {
         res.status(500).json({ message: 'Internal Server Error'});

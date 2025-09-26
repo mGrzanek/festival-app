@@ -20,7 +20,7 @@ describe('DELETE /api/seats', () => {
         await testSeatOne.save();
     });
 
-    it('/:id should update chosen document and return success', async () => {
+    it('/:id should remove chosen document and return success', async () => {
         const res = await request(server).delete('/api/seats/5d9f1140f10a81216cfd4408');
         const seat = await Seat.findOne({_id: '5d9f1140f10a81216cfd4408'});
 

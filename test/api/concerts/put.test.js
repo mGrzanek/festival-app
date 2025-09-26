@@ -22,7 +22,7 @@ describe('PUT /api/concerts', () => {
         await testConcertOne.save();
     });
 
-    it('/:id should update chosen document and return success', async () => {
+    it('/:id should remove chosen document and return success', async () => {
         const res = await request(server).put('/api/concerts/5d9f1140f10a81216cfd4408').send({ 
             performer: 'John',
             genre: 'Pop',
