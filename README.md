@@ -34,7 +34,9 @@ Insert your data into the key values.
 
 3. Install dependencies:
 
-`npm install`
+```bash
+npm install
+```
 
 4. Start the application from root with: 
 
