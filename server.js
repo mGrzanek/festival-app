@@ -11,12 +11,11 @@ const seatsRouter = require('./routes/seats.routes');
 const testimonialsRouter = require('./routes/testimonials.routes');
 
 const NODE_ENV = process.env.NODE_ENV;
-let dbUri = '';
+let dbUri;
 
 if(NODE_ENV === 'production') dbUri = process.env.MONGODB_URI;
 else if(NODE_ENV === 'test') dbUri = process.env.MONGODB_URI_TEST;
 else dbUri = process.env.MONGODB_URI_LOCAL;
-
 
 const server = app.listen(process.env.PORT || 8000, () => {
     if(NODE_ENV !== 'test' ) console.log('Server is running...');

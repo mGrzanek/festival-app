@@ -12,6 +12,7 @@ Project: https://festival-app-r92u.onrender.com
 
 - **Frontend:** React, Redux (with Thunk middleware), React Router, React-Bootstrap & Bootstrap, SCSS Modules
 - **Backend:** Node.js, Express.js, MongoDB, Mongoose, WebSocket
+- **Testing:** Mocha, Chai.js
 
 ## Configuration
 To run the application, you need an `.env` file with configuration data.
