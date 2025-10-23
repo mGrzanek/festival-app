@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 const PriceInfo = ({day, price, workshops}) => {
     const [concertDay, setConcertDay] = useState('');
+    console.log('workshops', workshops);
 
     useEffect(() => {
         if(day === 1) setConcertDay('one');
@@ -11,16 +12,18 @@ const PriceInfo = ({day, price, workshops}) => {
     }, [day]);
 
     return(
-        <>
+        <div className="alert alert-primary my-1 py-1 px-2 d-sm-flex flex-column justify-content-center align-items-center">
             <h2>Day {concertDay}</h2>
-            <p>Price: {price}$</p>
-            <p>Workshops: {workshops.map((workshop, index) => (
-                    <span key={index}>
-                        {workshop}{index < workshops.length - 1 && ', '}
-                    </span>
-                ))}
-            </p>
-        </>
+            <div className="d-flex flex-column justify-content-start w-75">
+                <p><b>Price:</b> ${price}</p>
+                <p><b>Workshops:</b> {workshops.map((workshop, index) => (
+                        <span key={index}>
+                            <i>"{workshop}"</i>{index < workshops.length - 1 && ', '}
+                        </span>
+                    ))}
+                </p>
+            </div>
+        </div>
     );
 };
 
