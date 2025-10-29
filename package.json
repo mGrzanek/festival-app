@@ -6,6 +6,11 @@
     "start": "nodemon server.js",
     "test": "set NODE_ENV=test&& mocha --watch \"./{,!(node_modules|client)/**/}*.test.js\""
   },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!axios)/"
+    ]
+  },
   "keywords": [],
   "author": "Monika",
   "license": "ISC",

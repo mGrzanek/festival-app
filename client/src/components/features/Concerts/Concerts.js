@@ -1,7 +1,7 @@
 import Concert from './../Concert/Concert';
 
 const Concerts = ({ concerts }) => (
-  <section>
+  <section data-testid='concerts-section'>
     {concerts.map(con => <Concert key={con._id} {...con} />)}
   </section>
 )

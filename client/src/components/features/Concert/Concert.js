@@ -4,7 +4,7 @@ import './Concert.scss';
 
 const Concert = ({ performer, price, genre, day, image }) => (
   <article className="concert">
-    <Row noGutters>
+    <Row className="g-0">
       <Col xs="6">
         <div className="concert__image-container">
           <img className="concert__image-container__img" src={image} alt={performer}/>
